@@ -1,0 +1,58 @@
+{% extends 'base.html' %} {% block head %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='style/loading.css') }}"
+/>
+{% endblock %} {% block header %}実写画像をまるでアニメに！{% endblock %} {%
+block content %}
+<h2 class="text-[1.5em]">Result Page</h2>
+<div id="loading-screen">
+  <div id="loading-spinner">生成中...</div>
+  <div id="loading-time">
+    ローディング時間: <span id="loading-duration">0.00</span> 秒
+  </div>
+</div>
+<div id="result-body" class="text-center" hidden>
+  <div class="images flex">
+    <img id="original-image" class="mx-auto" src={{url_for('static',
+    filename='images/' + file_name)}} alt="Original Image" />
+    <img
+      id="result-image"
+      class="mx-auto"
+      src="{{ image_path }}"
+      alt="Result Image"
+    />
+  </div>
+  <a href="/">to index page</a>
+</div>
+<script>
+  // ローディング画面、画像生成の非同期処理
+  $(document).ready(function () {
+    const startTime = new Date().getTime();
+    $('#loading-screen').show();
+
+    // ローディング時間を計算
+    const updateLoadingTime = () => {
+      var currentTime = new Date().getTime();
+      var elapsedSeconds = (currentTime - startTime) / 1000;
+      $('#loading-duration').text(elapsedSeconds.toFixed(2));
+    }
+    const updateInterval = setInterval(updateLoadingTime, 100);
+
+    $.ajax({
+      type: 'POST',
+      url: '/generate_image',
+      data: { file_name: {{ file_name | tojson }} },
+      success: function (data) {
+        clearInterval(updateInterval);
+        $('#loading-screen').hide();
+        $('#result-image').attr('src', `static/images/${data.file_name}`);
+        $('#result-body').show();
+      },
+      error: function (error) {
+        console.error(error);
+      }
+    });
+  });
+</script>
+{% endblock %}
