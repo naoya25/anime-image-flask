@@ -25,8 +25,8 @@ def create_anime_image(file_name: str) -> bool:
         ).to("mps")
         pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
 
-        if pipe.safety_checker is not None:
-            pipe.safety_checker = lambda images, **kwargs: (images, None)
+        # if pipe.safety_checker is not None:
+        pipe.safety_checker = lambda images, **kwargs: (images, None)
         pipe.enable_attention_slicing()
 
         # 画像生成
