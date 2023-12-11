@@ -11,22 +11,22 @@ block content %}
   <div id="loading-time"><span id="loading-duration">0.00</span> s</div>
 </div>
 <div id="result-body" class="text-center" hidden>
-  <div class="images flex">
+  <div class="images flex flex-wrap">
     <img
       id="original-image"
-      class="mx-auto w-auto h-[500px]"
+      class="mx-auto basis-1/3 h-[500px] object-cover"
       src="{{ image_path }}"
       alt="Original Image"
     />
     <img
       id="canny-image"
-      class="mx-auto w-auto h-[500px]"
+      class="mx-auto basis-1/3 h-[500px] object-cover"
       src="{{ image_path }}"
       alt="Canny Image"
     />
     <img
       id="result-image"
-      class="mx-auto w-auto h-[500px]"
+      class="mx-auto basis-1/3 h-[500px] object-cover"
       src="{{ image_path }}"
       alt="Result Image"
     />
@@ -55,6 +55,7 @@ block content %}
       type: 'POST',
       url: '/generate_image',
       data: { file_name: {{ file_name | tojson }} },
+      timeout: 5*60*1000,
       success: function (data) {
         clearInterval(updateInterval);
         $('#loading-screen').hide();
@@ -64,7 +65,12 @@ block content %}
         $('#result-body').show();
       },
       error: function (error) {
+        clearInterval(updateInterval);
         console.error(error);
+        $('#loading-screen').hide();
+        $('#result-body').empty()
+        .append('<div class="m-10">Time Out</div>')
+        .show();
       }
     });
   });
