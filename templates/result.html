@@ -7,22 +7,34 @@
 block content %}
 <h2 class="text-[1.5em]">Result Page</h2>
 <div id="loading-screen">
-  <div id="loading-spinner">生成中...</div>
-  <div id="loading-time">
-    ローディング時間: <span id="loading-duration">0.00</span> 秒
-  </div>
+  <div id="loading-spinner" class="m-10">生成中...</div>
+  <div id="loading-time"><span id="loading-duration">0.00</span> s</div>
 </div>
 <div id="result-body" class="text-center" hidden>
   <div class="images flex">
-    <img id="original-image" class="mx-auto" src={{url_for('static',
-    filename='images/' + file_name)}} alt="Original Image" />
+    <img
+      id="original-image"
+      class="mx-auto w-auto h-[500px]"
+      src="{{ image_path }}"
+      alt="Original Image"
+    />
+    <img
+      id="canny-image"
+      class="mx-auto w-auto h-[500px]"
+      src="{{ image_path }}"
+      alt="Canny Image"
+    />
     <img
       id="result-image"
-      class="mx-auto"
+      class="mx-auto w-auto h-[500px]"
       src="{{ image_path }}"
       alt="Result Image"
     />
   </div>
+  <a href="{{ url_for('download_image') }}" download="result_image.png">
+    Download Result Image
+  </a>
+  <p class="text-red-500">※画像が黒塗りで出力されることがあります</p>
   <a href="/">to index page</a>
 </div>
 <script>
@@ -46,7 +58,9 @@ block content %}
       success: function (data) {
         clearInterval(updateInterval);
         $('#loading-screen').hide();
-        $('#result-image').attr('src', `static/images/${data.file_name}`);
+        $('#original-image').attr('src', `./static/images/${data.file_name}`);
+        $('#canny-image').attr('src', `./static/images/canny_image.png`);
+        $('#result-image').attr('src', `./static/images/result.png`);
         $('#result-body').show();
       },
       error: function (error) {
